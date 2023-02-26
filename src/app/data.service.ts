@@ -33,7 +33,7 @@ import {
   evalMutant,
   evalTestsLocally,
   FS_TestSuite,
-  FS_User, runInZone, STAT,
+  FS_User,
   TestCaseConverter,
   TestSuiteConverter,
   UserConverter
@@ -44,6 +44,7 @@ interface STATE {
   readonly version: number;
   readonly mutants: SerializedMutant<any>[];
   readonly suites: readonly TestSuite[];
+  readonly canObserveString: string;
   readonly canObserve: Observable<FS_User[]>;
   readonly evals: FS_User['evals'];
 }
@@ -53,6 +54,7 @@ const emptyState: STATE = {
   version: -1,
   mutants: [],
   suites: [],
+  canObserveString: "[]",
   canObserve: of([]),
   evals: [
     -1,
@@ -158,6 +160,7 @@ export class DataService implements OnDestroy {
               ...ts,
               tests: ts.LtestIds.map(idTc => Ltc.find(tc => tc.id === idTc)!)
             })),
+            canObserveString: fsu.canObserve ?? "[]",
             canObserve: this.getObsUsersFromEmails( fsu.canObserve ? JSON.parse(fsu.canObserve) : []),
             evals: fsu.evals,
           })),
@@ -204,7 +207,8 @@ export class DataService implements OnDestroy {
   }
 
   private getObsUsersFromEmails(Lmails: string[]): Observable<FS_User[]> {
-    return combineLatest( Lmails.map(
+    console.log("getObsUsersFromEmails", Lmails)
+    return combineLatest( Lmails.map( uid => uid.toLowerCase() ).map(
       uid => docData( doc(this.fs, `users/${uid}` ).withConverter(UserConverter) )
     )).pipe(
       startWith( [] )
@@ -217,7 +221,7 @@ export class DataService implements OnDestroy {
     if (tmp) {
       return {
         ...tmp,
-        canObserve: this.getObsUsersFromEmails( (tmp.canObserve as string[]) ?? [] )
+        canObserve: this.getObsUsersFromEmails( tmp.canObserve ? JSON.parse(tmp.canObserve) : [] )
       }
     } else {
       return undefined;
@@ -234,7 +238,7 @@ export class DataService implements OnDestroy {
         },
         body: JSON.stringify({
           ...S,
-          canObserve: (await firstValueFrom(S.canObserve)).filter(u => !!u).map( u => u.email )
+          canObserve: S.canObserveString // (await firstValueFrom(S.canObserve)).filter(u => !!u).map( u => u.email )
         })
       });
       if (res.ok) {
@@ -271,7 +275,7 @@ export class DataService implements OnDestroy {
     const Lts = snapLts.docs.map( s => s.data() );
     Lts.forEach( ts => ts.LtestIds.forEach( tcid => {
       if (!Ltctmp.find(tc => tc.id === tcid)) {
-        console.error("problem with", ts, tcid)
+        console.error(`${U.email} problem with suite ${ts.id}, (${ts.LtestIds}), cannot not find ${tcid}`)
       }
     } ) )
     const Ltc: TestCase[] = Lts.flatMap( ts => ts.LtestIds.map( tcid => Ltctmp.find(tc => tc.id === tcid)! ) )

@@ -94,7 +94,7 @@ export const TestCaseConverter: FirestoreDataConverter<TestCase> = {
     if (data['expect']?.['state']) { //if defined as true
       data['expect']['state'] = JSON.parse(data['expect']['state']);
     }
-    return {...data, params: JSON.parse(data['params'])} as TestCase
+    return {...data, id: d.id, params: JSON.parse(data['params'])} as TestCase
   },
 };
 
@@ -120,15 +120,15 @@ export const UserConverter: FirestoreDataConverter<FS_User> = {
   toFirestore: (U: WithFieldValue<FS_User>) => U,
   fromFirestore: U => ({
     email: U.id,
-    canObserve: U.get("canObserve"),
+    canObserve: U.get("canObserve") ?? "[]",
     mutants: U.get("mutants") ?? [],
     testsVersion: U.get("testsVersion") ?? 0,
     evals: U.get("evals") ?? [
       -1,
       {play: [0,0], isValid: [0,0], winner: [0,0]},
       {play: [0,0], isValid: [0,0], winner: [0,0]},
-    ] as FS_User["evals"]
-  })
+    ] // satisfies FS_User["evals"]
+  } as FS_User)
 }
 
 export interface LocalSave {
