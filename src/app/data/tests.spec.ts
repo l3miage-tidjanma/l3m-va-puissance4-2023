@@ -8,14 +8,16 @@ import { dataTests } from "../data-tests/tests";
 const Ltests = dataTests.suites as unknown as TestSuite[];
 
 for (const ts of Ltests) {
-  describe(ts.label, () => {
-    for (const tc of ts.tests) {
-      it (tc.comment, () => {
-        const res = tc.op === "play" ? play(...tc.params)
-                  : tc.op === "winner" ? winner(...tc.params)
-                  : isValid(...tc.params);
-        expect( res ).toEqual( tc.expect );
-      })
-    }
-  })
+  if (ts.tests.length >0) {
+    describe(ts.label, () => {
+      for (const tc of ts.tests) {
+        it (tc.comment, () => {
+          const res = tc.op === "play" ? play(...tc.params)
+                    : tc.op === "winner" ? winner(...tc.params)
+                    : isValid(...tc.params);
+          expect( res ).toEqual( tc.expect );
+        })
+      }
+    });
+  }
 }

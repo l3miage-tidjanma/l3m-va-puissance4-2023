@@ -207,7 +207,7 @@ export class DataService implements OnDestroy {
   }
 
   private getObsUsersFromEmails(Lmails: string[]): Observable<FS_User[]> {
-    console.log("getObsUsersFromEmails", Lmails)
+    // console.log("getObsUsersFromEmails", Lmails)
     return combineLatest( Lmails.map( uid => uid.toLowerCase() ).map(
       uid => docData( doc(this.fs, `users/${uid}` ).withConverter(UserConverter) )
     )).pipe(

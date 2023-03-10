@@ -75,7 +75,7 @@ export class EditTestCaseComponent implements OnInit {
 
   ok() {
     const ntc: TestCase =
-        this.op === "isValid" ? {id: this.id, op: this.op, comment: this.comment, params: [this.state], expect: this.expectIsValid}
+        this.op === "isValid" ? {id: this.id, op: this.op, comment: this.comment, params: [this.state], expect: this.expectIsValid.valid ? {valid: true} : this.expectIsValid }
         : this.op === "winner" ? {id: this.id, op: this.op, comment: this.comment, params: [this.state], expect: this.expectWinner}
           : {
               id: this.id, op: this.op, comment: this.comment,
