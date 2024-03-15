@@ -1,0 +1,1 @@
+export const dataTests = {"userMail":"manyl.tidjani@etu.univ-grenoble-alpes.fr","version":1,"mutants":[],"suites":[{"id":"fz7FqJdvkOxVz5vzYQvi","label":"Tests isValid état intial de jeu","LtestIds":[],"tests":[]}],"canObserveString":"[]","canObserve":"[]","evals":[-1,{"isValid":[0,0],"play":[0,0],"winner":[0,0]},{"winner":[0,0],"isValid":[0,0],"play":[0,0]}]}
